@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Protobuf to Typescript</title>
+    <style>
+      body {
+        font-family: Sans-Serif;
+      }
+
+      h1, h2 {
+        margin: 16px 8px;
+      }
+
+      .col {
+        width: calc(50% - 16px);
+        float: left;
+        margin: 0 8px;
+      }
+
+      textarea {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <h1>One simple webpage to convert Protocol Buffers to TypeScript definition files.</h1>
+      <h2>Dentists hate him!</h2>
+      <div class="col">
+        Protocol buffer:
+        <br>
+<textarea name="" id="protobuf" rows="40" oninput="onProtobuf()">
+message Person {
+  string name = 1;
+  int32 id = 2;
+  bool isFriend = 3;
+  repeated PhoneNumber phones = 4;
+}
+
+message PhoneNumber {
+  string number = 1;
+  PhoneType type = 2;
+}
+
+message AddressBook {
+  repeated Person people = 1;
+}
+</textarea>
+      </div>
+      <div class="col">
+        Typescript d.ts:
+        <br>
+        <textarea name="" id="typescript" rows="40"></textarea>
+      </div>
+    </div>
+    <script>
+      function protoToTsType(p) {
+        const types = {
+          "double": "number",
+          "float": "number",
+          "int32": "number",
+          "int64": "number",
+          "uint32": "number",
+          "uint64": "number",
+          "sint32": "number",
+          "sint64": "number",
+          "fixed32": "number",
+          "fixed64": "number",
+          "sfixed32": "number",
+          "sfixed64": "number",
+          "bool": "boolean",
+          "string": "string",
+          "bytes": "string",
+        };
+
+        if (types[p]) {
+          return types[p];
+        }
+
+        return p;
+      }
+
+      function onProtobuf() {
+        parseProtobuf(protobufVal());
+      }
+
+      function protobufVal() {
+        const ta = document.getElementById("protobuf");
+        return ta.value;
+      }
+
+      function setTs(val) {
+        const ts = document.getElementById("typescript");
+        ts.value = val;
+      }
+
+      function parseProtobuf(protobuf) {
+        let parsed = "";
+
+        for (const line of protobuf.split("\n")) {
+          // console.log(`'${line}' -> '${parseProtobufLine(line)}'`);
+          parsed += parseProtobufLine(line);
+          parsed += "\n";
+        }
+
+        setTs(parsed);
+      }
+
+      function parseProtobufLine(line) {
+        if (!line) {
+          return "";
+        }
+
+        const indent = line.length - line.trimLeft().length
+
+        const tokens = line.trim().split(" ");
+
+        let isRepeated = false;
+        // debugger;
+        switch (tokens[0]) {
+          case "}":
+            return "}";
+          case "message":
+            return "interface " + tokens[1] + " {";
+          case "repeated":
+            isRepeated = true;
+            tokens.shift();
+        }
+
+        return `${" ".repeat(indent)}${tokens[1]}: ${protoToTsType(tokens[0])}${ isRepeated ? "[]" : ""}`;
+      }
+
+      parseProtobuf(protobufVal());
+    </script>
+  </body>
+</html>

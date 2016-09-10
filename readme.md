@@ -1,5 +1,6 @@
 # Convert Protobuf to Typescript definition files
 
+## What?
 Convert this:
 ```protobuf
 message Person {
@@ -38,3 +39,6 @@ interface AddressBook {
   people: Person[]
 }
 ```
+
+## Usage:
+Go here: [https://geotho.github.io/protobuf-to-typescript/](https://geotho.github.io/protobuf-to-typescript/)

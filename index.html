@@ -112,12 +112,15 @@ message AddressBook {
         }
 
         const indent = line.length - line.trimLeft().length
+        const indentChar = line[0];
 
-        const tokens = line.trim().split(" ");
+        const tokens = line.trim().split(" ").filter(Boolean);
 
         let isRepeated = false;
         // debugger;
         switch (tokens[0]) {
+          case "//":
+            return line;
           case "}":
             return "}";
           case "message":
@@ -127,7 +130,7 @@ message AddressBook {
             tokens.shift();
         }
 
-        return `${" ".repeat(indent)}${tokens[1]}: ${protoToTsType(tokens[0])}${ isRepeated ? "[]" : ""}`;
+        return `${indentChar.repeat(indent)}${tokens[1]}: ${protoToTsType(tokens[0])}${ isRepeated ? "[]" : ""}`;
       }
 
       parseProtobuf(protobufVal());
